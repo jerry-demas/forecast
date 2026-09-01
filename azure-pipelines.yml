@@ -1,0 +1,48 @@
+trigger:
+  tags:
+    include:
+      - RC/*
+  branches:
+    include:
+      - main
+      
+pool:
+  vmImage: 'ubuntu-latest'
+
+parameters:
+- name: DevBuild
+  displayName: Dev Release Build
+  type: boolean
+  default: false
+
+variables:
+- name: buildName
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/RC/')}}:
+    value: ${{ replace(variables['Build.SourceBranchName'], 'RC/', '') }} 
+  ${{ elseif parameters['DevBuild'] }}:
+    value: 0.0.0
+  ${{ else }}:    
+    value: _${{ variables['Build.SourceBranchName']}}
+
+name: ${{ variables.buildName }}$(rev:.r)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Software Architecture/PipelineTemplates
+      ref: refs/heads/main # specify the branch or tag
+
+stages:
+- template: Templates/Composite_Build.yml@templates  # Template reference
+  parameters:
+    isReleaseBuild: ${{ not(startsWith(variables.buildName, '_')) }}
+    isSonarQubeScan: true
+    sonarQubeOrganizationKey: "cbiz-appsdev"
+    sonarQubeProjectKey: "CBIZ-AppsDev_PartnerForecast.Website"
+    buildProjects: "$(Build.SourcesDirectory)/**/PartnerForecast.Website.Presentation.*.csproj"
+    versionNumber: "$(Build.BuildNumber)"
+    dockerFile: "Dockerfile"
+    dockerRepositoryName: "partner_forecast_website"
+    npmBuildProjects: "$(Build.SourcesDirectory)/PartnerForecast.Website.Presentation.React"
+    npmBuildOutput: "./PartnerForecast.Website.Presentation.React/out/"

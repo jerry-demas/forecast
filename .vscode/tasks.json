@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-webapi",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/PartnerForecast.Website.Presentation.WebApi/PartnerForecast.Website.Presentation.WebApi.csproj"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "dev-react",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/PartnerForecast.Website.Presentation.React"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+services:
+  partner_forecast_website:
+    image: cbizappdev-c4erg2gbekgvfxhd.azurecr.io/partner_forecast_website:${TAG}
+    container_name: partner_forecast_website
+    user: "100000:100000"
+    secrets:
+      - appCert.pfx
+    environment:
+      - KRB5CCNAME=/tmp/krb5cc_100000
+      - KRB5_KTNAME=/keytabs/machine.keytab
+    env_file:
+        - path: ${SERVER_COMPOSER_PATH}${PROJECT_NAME}/partner_forecast_website/docker-compose.env
+          required: true
+    volumes:
+      - krb5:/krb5:ro
+      - keytabs:/keytabs:ro
+    ports:
+      - ${EXTERNAL_PORT}:8080 #8080 for all
+    labels:
+      io.portainer.accesscontrol.public: "true"
+    logging:
+      driver: local 
+
+volumes:
+  krb5:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/var/credentials-generator/tickets/!${GMSA_ACCOUNT}"
+
+  keytabs:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/usr/share/keytabs"
+
+secrets:
+  appCert.pfx:
+    file: ${SERVER_CERT_PATH}${CERT_NAME}.pfx

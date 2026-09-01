@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F49048DF-1D4D-4146-88B3-19E9619184E2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		NuGet.Config = NuGet.Config
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartnerForecast.Website.UnitTests", "PartnerForecast.Website.UnitTests\PartnerForecast.Website.UnitTests.csproj", "{239ECC1B-961A-463B-8773-C954EF66B794}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartnerForecast.Website.Application", "PartnerForecast.Website.Application\PartnerForecast.Website.Application.csproj", "{058E2729-85DA-4ADD-A0EA-DB38B2F674F4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartnerForecast.Website.Presentation.WebApi", "PartnerForecast.Website.Presentation.WebApi\PartnerForecast.Website.Presentation.WebApi.csproj", "{1E75D6CE-709A-436B-8DEB-D6F91DED78DE}"
+EndProject
+
+
+
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose", "docker-compose", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose\docker-compose.yml = docker-compose\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "partner_forecast_website", "partner_forecast_website", "{076255BC-A13D-47FE-9032-7DEDC30D310A}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose\partner_forecast_website\docker-compose.dev.env = docker-compose\partner_forecast_website\docker-compose.dev.env
+		docker-compose\partner_forecast_website\docker-compose.prod.env = docker-compose\partner_forecast_website\docker-compose.prod.env
+		docker-compose\partner_forecast_website\docker-compose.uat.env = docker-compose\partner_forecast_website\docker-compose.uat.env
+	EndProjectSection
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "PartnerForecast.Website.Presentation.React", "PartnerForecast.Website.Presentation.React\PartnerForecast.Website.Presentation.React.esproj", "{B6653670-937A-FD82-8420-66A1C2390AED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{239ECC1B-961A-463B-8773-C954EF66B794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{239ECC1B-961A-463B-8773-C954EF66B794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{239ECC1B-961A-463B-8773-C954EF66B794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{239ECC1B-961A-463B-8773-C954EF66B794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{058E2729-85DA-4ADD-A0EA-DB38B2F674F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{058E2729-85DA-4ADD-A0EA-DB38B2F674F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{058E2729-85DA-4ADD-A0EA-DB38B2F674F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{058E2729-85DA-4ADD-A0EA-DB38B2F674F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E75D6CE-709A-436B-8DEB-D6F91DED78DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E75D6CE-709A-436B-8DEB-D6F91DED78DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E75D6CE-709A-436B-8DEB-D6F91DED78DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E75D6CE-709A-436B-8DEB-D6F91DED78DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E4800D1-7CE7-442D-9043-98714620C7DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E4800D1-7CE7-442D-9043-98714620C7DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E4800D1-7CE7-442D-9043-98714620C7DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E4800D1-7CE7-442D-9043-98714620C7DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FF7447-BD03-4E6D-9380-031481BB05E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14FF7447-BD03-4E6D-9380-031481BB05E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14FF7447-BD03-4E6D-9380-031481BB05E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14FF7447-BD03-4E6D-9380-031481BB05E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6653670-937A-FD82-8420-66A1C2390AED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6653670-937A-FD82-8420-66A1C2390AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6653670-937A-FD82-8420-66A1C2390AED}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B6653670-937A-FD82-8420-66A1C2390AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6653670-937A-FD82-8420-66A1C2390AED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6653670-937A-FD82-8420-66A1C2390AED}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {F49048DF-1D4D-4146-88B3-19E9619184E2}
+		{076255BC-A13D-47FE-9032-7DEDC30D310A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB8B227D-F348-425E-A732-7DA83164BA16}
+	EndGlobalSection
+EndGlobal
