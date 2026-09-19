@@ -1,4 +1,6 @@
 ﻿using Cbiz.SharedPackages;
+using PartnerForecast.Website.Application.Features.AuditLogs.Models;
+using PartnerForecast.Website.Application.Features.TaskCodes.Models;
 using PartnerForecast.Website.Application.Features.TaskCodes.Modules;
 using System.Linq.Expressions;
 
@@ -12,7 +14,7 @@ public interface ITaskCodeRepository
         Expression<Func<TaskCode, bool>> predicate,       
         CancellationToken cancellationToken);
 
-    Task<Either<TaskCode, PartnerForecastException>> UpdateAsync(
+    Task<Either<TaskCodeUpdate, PartnerForecastException>> UpdateAsync(
         Expression<Func<TaskCode, bool>> predicate,
         Action<TaskCode> updateAction,
         CancellationToken cancellationToken);

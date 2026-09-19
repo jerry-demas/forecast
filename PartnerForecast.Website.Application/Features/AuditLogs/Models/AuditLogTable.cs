@@ -14,7 +14,7 @@ public record AuditLogTable(
     string ChangedByEmployeeDomain
 )
 {
-    public ClientHours ClientHours { get; init; } = default!;
+    //public ClientHours ClientHours { get; init; } = default!;
 };
 
 

@@ -9,14 +9,21 @@ public static class ForecastConstants
         public const string USER_DOMAIN_CBIZ = "cbiz";
     }
 
-    public static class AuditLogCategories
+    public static class AuditLog
     {
         public enum Category
         {
             ClientHours,
-            TaskCode,
+            TaskCodes,
             EqrUsers
         }
+         public enum Action
+        {
+            Added,
+            Updated,
+            Deleted
+        }
+       
     }
 
     public const string CLIENT_STATUS_ACTIVE = "ACTIVE";

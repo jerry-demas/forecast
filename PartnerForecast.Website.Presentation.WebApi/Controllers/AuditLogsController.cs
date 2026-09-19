@@ -13,26 +13,13 @@ namespace PartnerForecast.Website.Presentation.WebApi.Controllers;
 public class AuditLogsController(
     IAuditLogService _auditLogService
 ) : ControllerBase
-{
-
-    [HttpGet("HoursId/{hoursId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-    public async Task<IActionResult> HoursId(int hoursId, CancellationToken cancellationToken)
-    {
-        return (await _auditLogService.GetAuditLogsByHoursId(hoursId, cancellationToken))
-                .Match<IActionResult>(logs => Ok(logs),
-                    (_, _failures) => NotFound(_failures.Message));
-    }
-
-        
+{           
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]    
-    public async Task<IActionResult> GetLogsByIsEQRandIsNonBillable([FromQuery] GetLogsRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAuditLogs([FromQuery] GetLogsRequest request, CancellationToken cancellationToken)
     {
-        return (await _auditLogService.GetAuditLogsByisEQRisNonbillable(request, cancellationToken))
+        return (await _auditLogService.GetAuditLogs(request, cancellationToken))
                  .Match<IActionResult>(result => Ok(result),
                     (_, failures) => BadRequest(failures.Message));
     }

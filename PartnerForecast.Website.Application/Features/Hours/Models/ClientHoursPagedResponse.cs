@@ -4,5 +4,5 @@ public record ClientHoursPagedResponse(
     int pageNumber,
     int pageSize,
     int totalRecords,
-    IEnumerable<ClientHours> records
+    IEnumerable<ClientHoursResponse> records
 );

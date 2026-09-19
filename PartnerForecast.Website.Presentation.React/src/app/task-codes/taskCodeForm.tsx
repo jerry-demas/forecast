@@ -1,10 +1,10 @@
-import { taskCode } from "@/entities/taskCode";
+import { ITaskCode } from "@/entities/interfaces/ITaskCode";
 import { useState } from "react";
 
 interface TaskCodeFormProps {
   mode: "add" | "edit";
-  code: taskCode | null;
-  onSave: (code: taskCode) => void;
+  code: ITaskCode | null;
+  onSave: (code: ITaskCode) => void;
   onCancel: () => void;
 }
 
@@ -14,7 +14,7 @@ export default function TaskCodeForm({
   onSave,
   onCancel,
 }: TaskCodeFormProps) {
-  const [formData, setFormData] = useState<taskCode>({
+  const [formData, setFormData] = useState<ITaskCode>({
     id: code?.id || 0,
     code: code?.code || "",
     codeDescription: code?.codeDescription || "",
@@ -28,7 +28,7 @@ export default function TaskCodeForm({
   };
 
   const handleChange = (
-    field: keyof taskCode,
+    field: keyof ITaskCode,
     value: string | number | boolean,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

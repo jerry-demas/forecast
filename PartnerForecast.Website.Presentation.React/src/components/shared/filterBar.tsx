@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import {
-  FunnelIcon,
-  ArrowPathIcon,
-} from '@heroicons/react/24/outline';
+import { Button } from "@/components/ui/button";
+import { FunnelIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import { YearSelect } from "./yearSelect";
+import { MonthSelect } from "./monthSelect";
 
 interface UserFilterBarProps {
   searchText: string;
@@ -14,13 +13,18 @@ interface UserFilterBarProps {
   activeOnly?: boolean;
 
   onSearchChange: (value: string) => void;
+  onMonthChange?: (value: number) => void;
+  onYearChange?: (year: number) => void;
   onAdminChange?: (value: boolean) => void;
   onActiveChange?: (value: boolean) => void;
-  
+  showMonthSelect?: boolean;
+  showYearSelect?: boolean;
   showAdminFilter?: boolean;
   showActiveFilter?: boolean;
   onFilter: () => void;
   onClear: () => void;
+  monthValue?: number;
+  yearValue?: number;
 }
 
 export function UserFilterBar({
@@ -29,24 +33,34 @@ export function UserFilterBar({
   adminOnly,
   activeOnly,
   onSearchChange,
+  onMonthChange,
+  onYearChange,
   onAdminChange,
   onActiveChange,
   onFilter,
   onClear,
+  showMonthSelect,
+  showYearSelect,
   showAdminFilter,
-  showActiveFilter
+  showActiveFilter,
+  monthValue,
+  yearValue,
 }: UserFilterBarProps) {
   return (
     <div className="flex items-center gap-4 flex-wrap">
-
       <input
         type="text"
-        placeholder={searchTextPlaceholder ?? 'Search'}
+        placeholder={searchTextPlaceholder ?? "Search"}
         value={searchText}
         onChange={(e) => onSearchChange(e.target.value)}
         className="w-64 border border-gray-300 rounded-lg px-3 py-2"
       />
-
+      {showMonthSelect && (
+        <MonthSelect onChange={onMonthChange} value={monthValue} />
+      )}
+      {showYearSelect && (
+        <YearSelect onChange={onYearChange} value={yearValue} />
+      )}
       {showAdminFilter && (
         <label className="flex items-center gap-2">
           <input
@@ -58,7 +72,7 @@ export function UserFilterBar({
         </label>
       )}
 
-      {showActiveFilter && (  
+      {showActiveFilter && (
         <label className="flex items-center gap-2">
           <input
             type="checkbox"

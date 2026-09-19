@@ -1,6 +1,8 @@
 ﻿using Cbiz.SharedPackages;
 using Microsoft.EntityFrameworkCore;
+using PartnerForecast.Website.Application.Features.AuditLogs.Models;
 using PartnerForecast.Website.Application.Features.TaskCodes.Contracts;
+using PartnerForecast.Website.Application.Features.TaskCodes.Models;
 using PartnerForecast.Website.Application.Features.TaskCodes.Modules;
 using PartnerForecast.Website.Application.Shared.Data;
 using System.Linq.Expressions;
@@ -31,7 +33,7 @@ public class TaskCodeRepository(
             }
     }
 
-    public async Task<Either<TaskCode, PartnerForecastException>> UpdateAsync(
+    public async Task<Either<TaskCodeUpdate, PartnerForecastException>> UpdateAsync(
         Expression<Func<TaskCode, bool>> predicate, 
         Action<TaskCode> updateAction, 
         CancellationToken cancellationToken)
@@ -48,9 +50,20 @@ public class TaskCodeRepository(
 
             updateAction(taskCode);
 
+            var changes = _dataContext.Entry(taskCode)
+                .Properties
+                .Where(p => p.IsModified)
+                .Select(p => new Change(                
+                    p.Metadata.Name,
+                    p.OriginalValue?.ToString() ?? string.Empty,
+                    p.CurrentValue?.ToString() ?? string.Empty
+                ))
+                .ToArray();
+
+
             await _dataContext.SaveChangesAsync(cancellationToken);
 
-            return taskCode;
+            return new TaskCodeUpdate(taskCode, changes);
         }
         catch (Exception ex)
         {

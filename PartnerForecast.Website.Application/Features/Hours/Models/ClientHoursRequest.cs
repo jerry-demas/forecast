@@ -6,9 +6,12 @@ namespace PartnerForecast.Website.Application.Features.Hours.Models;
 
 public record ClientHoursRequest(
         bool isEqr,
-        bool isNonBillable,
-        int? EmployeeNumberAssigned,
-        string? CustomerNumber,
+        bool isNonBillable,        
+        string? SearchText,
         int? Year,
-        int? Month
+        int? Month,
+        bool forNewHours,
+        string? ClientNumber,    
+        int? EmployeeNumber ,
+        string? TaskCode
 );

@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { usersService } from "@/services/userServices";
-import { UserLookupResult } from "@/entities/ldapSearchUsersResult";
+import { IUserLookupResult } from "@/entities/interfaces/IldapSearchUsersResult";
 import { ThinkingIndicator } from "./spinner";
 import toastAlert from "./toastAlert";
 
 interface UserLookupProps {
-  value?: UserLookupResult | null;
-  onChange: (user: UserLookupResult | null) => void;
-  //searchUsers: (searchText: string) => Promise<UserLookupResult[]>;
+  value?: IUserLookupResult | null;
+  onChange: (user: IUserLookupResult | null) => void;
+  onSelect?: (user: IUserLookupResult) => void;
+  //searchUsers: (searchText: string) => Promise<IUserLookupResult[]>;
   placeholder?: string;
 }
 
@@ -15,10 +16,11 @@ export function LdapUserLookup({
   value,
   onChange,
   //searchUsers,
+  onSelect,
   placeholder,
 }: UserLookupProps) {
   const [searchText, setSearchText] = useState(value?.employeeName ?? "");
-  const [users, setUsers] = useState<UserLookupResult[]>([]);
+  const [users, setUsers] = useState<IUserLookupResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const selectedRef = useRef(false);
@@ -52,6 +54,7 @@ export function LdapUserLookup({
 
   return (
     <div className="relative w-full">
+      <label className="block mb-1 font-medium">User</label>
       <input
         type="text"
         value={searchText}
@@ -75,6 +78,7 @@ export function LdapUserLookup({
                 selectedRef.current = true;
                 setSearchText(user.employeeName);
                 onChange(user);
+                onSelect?.(user);
                 setShowDropdown(false);
               }}
             >
@@ -86,4 +90,3 @@ export function LdapUserLookup({
     </div>
   );
 }
-//export { UserLookupResult };

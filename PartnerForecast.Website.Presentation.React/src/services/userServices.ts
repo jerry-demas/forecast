@@ -5,13 +5,13 @@ import {
   SEARCHLDAPUSER,
   UPDATENAOUSER,
 } from "@/lib/apiEndPointBaseConstants";
-import { naoUser } from "@/entities/naoUser";
-import { NaoUserSearchRequest } from "@/entities/naoSearchRequest";
+import { INaoUser } from "@/entities/interfaces/INaoUser";
+import { NaoUserSearchRequest } from "@/app/nao-users/naoSearchRequest";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 class UsersService {
-  getNaoUsers = async (request?: NaoUserSearchRequest): Promise<naoUser[]> => {
+  getNaoUsers = async (request?: NaoUserSearchRequest): Promise<INaoUser[]> => {
     const naoUsersUrl = `${apiBaseUrl}${GETNAOUSERS}`;
 
     try {
@@ -42,7 +42,7 @@ class UsersService {
         return [];
       }
 
-      const naoUsers: naoUser[] = await response.json();
+      const naoUsers: INaoUser[] = await response.json();
 
       return naoUsers;
     } catch (error) {
@@ -84,7 +84,7 @@ class UsersService {
     }
   };
 
-  updateNaoUser = async (user: naoUser): Promise<boolean> => {
+  updateNaoUser = async (user: INaoUser): Promise<boolean> => {
     const naoUsersUrl = `${apiBaseUrl}${UPDATENAOUSER}`;
 
     try {
@@ -118,7 +118,7 @@ class UsersService {
     }
   };
 
-  addNaoUser = async (user: naoUser): Promise<naoUser> => {
+  addNaoUser = async (user: INaoUser): Promise<INaoUser> => {
     const naoUsersUrl = `${apiBaseUrl}${ADDNAOUSER}`;
     try {
       const response = await fetch(naoUsersUrl, {
@@ -146,7 +146,7 @@ class UsersService {
     }
   };
 
-  searchLdapUser = async (value: string): Promise<naoUser[]> => {
+  searchLdapUser = async (value: string): Promise<INaoUser[]> => {
     const searchLdapUserUrl = `${apiBaseUrl}${SEARCHLDAPUSER}?name=${encodeURIComponent(value)}`;
     try {
       const response = await fetch(searchLdapUserUrl, {
@@ -163,7 +163,7 @@ class UsersService {
 
         return [];
       }
-      const naoUsers: naoUser[] = await response.json();
+      const naoUsers: INaoUser[] = await response.json();
       return naoUsers;
     } catch (error) {
       console.error("Error searching LDAP user", {

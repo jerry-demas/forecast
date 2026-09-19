@@ -4,7 +4,7 @@ using PartnerForecast.Website.Application.Features.Users.Models;
 
 namespace PartnerForecast.Website.Application.Shared.Data.Maps;
 
-internal class EqrUserMap : IEntityTypeConfiguration<EqrUser>
+internal class NaoUserMap : IEntityTypeConfiguration<EqrUser>
 {
  public void Configure(EntityTypeBuilder<EqrUser> builder)
  {

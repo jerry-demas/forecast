@@ -15,7 +15,7 @@ export default function Modal({
   icon,
   onClose,
   children,
-  width = "max-w-lg",
+  width = "max-w-3xl",
 }: ModalProps) {
   if (!open) return null;
 

@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Cbiz.SharedPackages;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PartnerForecast.Website.Application;
 using PartnerForecast.Website.Application.Features.TaskCodes.Contracts;
 using PartnerForecast.Website.Application.Features.TaskCodes.Models;
 using PartnerForecast.Website.Application.Features.TaskCodes.Modules;
+using PartnerForecast.Website.Application.Features.Users.Contracts;
+using PartnerForecast.Website.Application.Features.Users.Models;
 
 namespace PartnerForecast.Website.Presentation.WebApi.Controllers;
 
@@ -11,7 +15,8 @@ namespace PartnerForecast.Website.Presentation.WebApi.Controllers;
 [Route("api/[controller]")]
 
 public class TaskCodesController(
-    ITaskCodeService _taskCodeService
+    ITaskCodeService _taskCodeService,
+    IUserService _userservice
 ) : ControllerBase
 {
 
@@ -61,7 +66,12 @@ public class TaskCodesController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Add([FromBody] TaskCode taskCode, CancellationToken cancellationToken)
     {
-        return (await _taskCodeService.AddTaskCode(taskCode, cancellationToken))
+        var currentUser = await CurrentUser();
+        if (currentUser.HasFailure)
+        {
+            return BadRequest(currentUser.Failure.Message);
+        }
+        return (await _taskCodeService.AddTaskCode(taskCode, currentUser.Value, cancellationToken))
                 .Match<IActionResult>(code => Ok(code),
                     (_, _failures) => BadRequest(_failures.Message));
     }
@@ -71,7 +81,12 @@ public class TaskCodesController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(int taskId, CancellationToken cancellationToken)
     {
-        return (await _taskCodeService.DeleteTaskCode(taskId, cancellationToken))
+        var currentUser = await CurrentUser();
+        if (currentUser.HasFailure)
+        {
+            return BadRequest(currentUser.Failure.Message);
+        }
+        return (await _taskCodeService.DeleteTaskCode(taskId, currentUser.Value, cancellationToken))
                 .Match<IActionResult>(code => Ok(code),
                     (_, _failures) => BadRequest(_failures.Message));
     }
@@ -82,8 +97,21 @@ public class TaskCodesController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromBody] TaskCode taskCode, CancellationToken cancellationToken)
     {
-        return (await _taskCodeService.UpdateTaskCode(taskCode, cancellationToken))
+        var currentUser = await CurrentUser();
+        if (currentUser.HasFailure)
+        {
+            return BadRequest(currentUser.Failure.Message);
+        }
+        return (await _taskCodeService.UpdateTaskCode(taskCode, currentUser.Value, cancellationToken))
                 .Match<IActionResult>(code => Ok(code),
                     (_, _failures) => BadRequest(_failures.Message));
     }
+
+    
+    private async Task<Either<User, PartnerForecastException>> CurrentUser()
+    {
+        var userName = HttpContext?.User?.Identity?.Name;
+        return await _userservice.GetCurrentUserByIdentityAsync(userName, CancellationToken.None);
+    }
+
 }

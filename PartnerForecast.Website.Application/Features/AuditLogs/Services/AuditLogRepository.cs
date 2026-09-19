@@ -1,5 +1,6 @@
 ﻿using Cbiz.SharedPackages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Server;
 using PartnerForecast.Website.Application.Features.AuditLogs.Contracts;
 using PartnerForecast.Website.Application.Features.AuditLogs.Models;
 using PartnerForecast.Website.Application.Shared.Data;
@@ -14,38 +15,17 @@ public class AuditLogRepository(
     : IAuditLogRepository
 {
     private readonly PartnerForecastDataContext _dataContext = dataContext;
-       
-    public async Task<Either<IEnumerable<AuditLogRecord>, PartnerForecastException>> GetAuditLogsByHoursId(int hoursId, CancellationToken cancellationToken)
-        => await GetListAsync(
-            al => al.ClientHoursId == hoursId, 
-            cancellationToken);
 
-    public async Task<Either<IEnumerable<AuditLogRecord>, PartnerForecastException>> GetAuditLogsByisEQRisNonbillable(GetLogsRequest request,  CancellationToken cancellationToken)
-        => await GetListAsync(
-            al => al.ClientHours.IsEQR == request.IsEqr && al.ClientHours.IsNonBillable == request.IsNonBillable && al.LogCategory == request.Category.ToString(),           
-            cancellationToken);
-
-    public async Task<Either<AuditLogRecord, PartnerForecastException>> AddAuditLog(AuditLogRecord log, CancellationToken cancellationToken)
-         => await AddAsync(
-                log,            
-                cancellationToken);
-
-
-
-
-
-
-
-    private async Task<Either<IEnumerable<AuditLogRecord>, PartnerForecastException>> GetListAsync(
-       Expression<Func<AuditLogTable, bool>> predicate,
-       CancellationToken cancellationToken)
+    public async Task<Either<IEnumerable<AuditLogRecord>, PartnerForecastException>> GetListAsync(
+        Expression<Func<AuditLogTable, bool>> predicate, 
+        CancellationToken cancellationToken)
     {
 
         try
         {
             var auditLogData = await _dataContext.AuditLogs
                 .AsNoTracking()
-                .Where(predicate)
+                .Where(predicate)                
                 .Select(al => new
                 {
                     al.Id,
@@ -59,25 +39,21 @@ public class AuditLogRepository(
                     al.CreatedDateTime
                 })
                 .ToListAsync(cancellationToken);
-
-            if (auditLogData == null || !auditLogData.Any()) {
-                return new PartnerForecastException("No audit logs found.");
-            }
-
-            var result = auditLogData.Select(al => new AuditLogRecord
-            (
-                al.Id,
-                al.ClientHoursId,
-                al.LogCategory,
-                al.ChangedByEmployeeNumber,
-                al.ChangeDescription,
-                al.Changes != null
-                       ? JsonSerializer.Deserialize<IEnumerable<Change>>(al.Changes)
-                       : null,
-                al.CreatedDateTime,
-                al.ChangedByEmployeeName,
-                al.ChangedByEmployeeDomain
-            )).ToList();
+                
+                var result = auditLogData.Select(al => new AuditLogRecord
+                (
+                    al.Id,
+                    al.ClientHoursId,
+                    al.LogCategory,
+                    al.ChangedByEmployeeNumber,
+                    al.ChangeDescription,
+                    al.Changes != null
+                        ? JsonSerializer.Deserialize<IEnumerable<Change>>(al.Changes)
+                        : null,
+                    al.CreatedDateTime.ToString("MM/dd/yy hh:mm tt"),
+                    al.ChangedByEmployeeName,
+                    al.ChangedByEmployeeDomain
+                )).ToList();
 
             return result;
 
@@ -90,7 +66,11 @@ public class AuditLogRepository(
 
 
 
-    private async Task<Either<AuditLogRecord, PartnerForecastException>> AddAsync(
+
+
+
+
+    public async Task<Either<AuditLogRecord, PartnerForecastException>> AddAsync(
         AuditLogRecord log,
         CancellationToken cancellationToken
     ) 
@@ -110,8 +90,5 @@ public class AuditLogRepository(
         }
 
     }
-    
-
-
 
 }

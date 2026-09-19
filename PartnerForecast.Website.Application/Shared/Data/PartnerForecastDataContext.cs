@@ -20,16 +20,16 @@ public class PartnerForecastDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {        
-        modelBuilder.ApplyConfiguration(new Maps.EqrUserMap());
+        modelBuilder.ApplyConfiguration(new Maps.NaoUserMap());
         modelBuilder.ApplyConfiguration(new Maps.TaskCodeMap());
         modelBuilder.ApplyConfiguration(new Maps.AuditLogMap());
         modelBuilder.ApplyConfiguration(new Maps.ClientHoursMap());
 
-        modelBuilder.Entity<AuditLogTable>()
-          .HasOne(al => al.ClientHours)
-          .WithMany(ch => ch.AuditLogs)
-          .HasForeignKey(al => al.ClientHoursId)
-          .IsRequired();
+        //modelBuilder.Entity<AuditLogTable>()
+        //  .HasOne(al => al.ClientHours)
+        //  .WithMany(ch => ch.AuditLogs)
+         // .HasForeignKey(al => al.ClientHoursId)
+        //  .IsRequired();
     }
 
 

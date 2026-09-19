@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Cbiz.SharedPackages;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PartnerForecast.Website.Application;
 using PartnerForecast.Website.Application.Features.Hours.Contracts;
 using PartnerForecast.Website.Application.Features.Hours.Models;
 using PartnerForecast.Website.Application.Features.TaskCodes.Modules;
+using PartnerForecast.Website.Application.Features.Users.Contracts;
+using PartnerForecast.Website.Application.Features.Users.Models;
 
 namespace PartnerForecast.Website.Presentation.WebApi.Controllers;
 
@@ -10,7 +14,8 @@ namespace PartnerForecast.Website.Presentation.WebApi.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 public class ClientHoursController(
-    IClientHoursService _clientHoursService
+    IClientHoursService _clientHoursService,
+    IUserService _userservice
     ) : ControllerBase
 {
 
@@ -44,7 +49,13 @@ public class ClientHoursController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Add([FromBody] ClientHours clientHours, CancellationToken cancellationToken)
     {
-        return (await _clientHoursService.AddHour(clientHours, cancellationToken))
+        var currentUser = await CurrentUser();
+        if (currentUser.HasFailure)
+        {
+            return BadRequest(currentUser.Failure.Message);
+        }
+        
+        return (await _clientHoursService.AddHour(clientHours, currentUser.Value, cancellationToken))
                 .Match<IActionResult>(hour => Ok(hour),
                     (_, _failures) => BadRequest(_failures.Message));
     }
@@ -54,7 +65,13 @@ public class ClientHoursController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(int hoursId, CancellationToken cancellationToken)
     {
-        return (await _clientHoursService.DeleteHours(hoursId, cancellationToken))
+        var currentUser = await CurrentUser();
+        if (currentUser.HasFailure)
+        {
+            return BadRequest(currentUser.Failure.Message);
+        }
+
+        return (await _clientHoursService.DeleteHours(hoursId, currentUser.Value, cancellationToken))
                 .Match<IActionResult>(hour => Ok(hour),
                     (_, _failures) => BadRequest(_failures.Message));
     }
@@ -64,9 +81,24 @@ public class ClientHoursController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromBody] ClientHours clientHours, CancellationToken cancellationToken)
     {
-        return (await _clientHoursService.UpdateHours(clientHours, cancellationToken))
+
+        var currentUser = await CurrentUser();
+        if (currentUser.HasFailure)
+        {
+            return BadRequest(currentUser.Failure.Message);
+        }
+
+
+        return (await _clientHoursService.UpdateHours(clientHours, currentUser.Value, cancellationToken))
                 .Match<IActionResult>(hour => Ok(hour),
                     (_, _failures) => BadRequest(_failures.Message));
+    }
+
+
+    private async Task<Either<User, PartnerForecastException>> CurrentUser()
+    {
+        var userName = HttpContext?.User?.Identity?.Name;
+        return await _userservice.GetCurrentUserByIdentityAsync(userName, CancellationToken.None);
     }
 
 }

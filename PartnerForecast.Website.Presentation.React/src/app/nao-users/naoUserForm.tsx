@@ -1,12 +1,12 @@
 import { LdapUserLookup } from "@/components/shared/ldapUserLookup";
-import { naoUser } from "@/entities/naoUser";
-import { UserLookupResult } from "@/entities/ldapSearchUsersResult";
+import { INaoUser } from "@/entities/interfaces/INaoUser";
+import { IUserLookupResult } from "@/entities/interfaces/IldapSearchUsersResult";
 import { FormEvent, useState } from "react";
 
 interface NaoUserFormProps {
   mode: "add" | "edit";
-  user: naoUser | null;
-  onSave: (user: naoUser) => void;
+  user: INaoUser | null;
+  onSave: (user: INaoUser) => void;
   onCancel: () => void;
 }
 
@@ -16,7 +16,7 @@ export default function NaoUserForm({
   onSave,
   onCancel,
 }: NaoUserFormProps) {
-  const [formData, setFormData] = useState<naoUser>({
+  const [formData, setFormData] = useState<INaoUser>({
     id: user?.id || 0,
     employeeNumber: user?.employeeNumber || 0,
     employeeName: user?.employeeName || "",
@@ -29,7 +29,7 @@ export default function NaoUserForm({
 
   // Add state for LDAP lookup
   const [selectedLdapUser, setSelectedLdapUser] =
-    useState<UserLookupResult | null>(null);
+    useState<IUserLookupResult | null>(null);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -37,14 +37,14 @@ export default function NaoUserForm({
   };
 
   const handleChange = (
-    field: keyof naoUser,
+    field: keyof INaoUser,
     value: string | number | boolean,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   // Handle LDAP user selection
-  const handleLdapUserSelect = (ldapUser: UserLookupResult | null) => {
+  const handleLdapUserSelect = (ldapUser: IUserLookupResult | null) => {
     setSelectedLdapUser(ldapUser);
 
     if (ldapUser) {

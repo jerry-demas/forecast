@@ -8,7 +8,7 @@ namespace PartnerForecast.Website.Application.Features.Users.Contracts;
 
 public interface IUserRepository
 {
-        Task<Either<EqrUser, PartnerForecastException>> UpdateAsync(
+    Task<Either<UserUpdate, PartnerForecastException>> UpdateAsync(
         Expression<Func<EqrUser, bool>> predicate,
         Action<EqrUser> updateAction,
         CancellationToken cancellationToken);

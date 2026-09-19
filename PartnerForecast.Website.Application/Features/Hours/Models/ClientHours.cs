@@ -50,12 +50,12 @@ public class ClientHours
     public required DateTime CreatedDateTime { get; set; }
 
     public required DateTime LastUpdatedDateTime { get; set; }
-
-    public string? TaskCode { get; set; }
+    
+    public required string TaskCode { get; set; }
 
     public required bool IsEQR { get; set; }
 
     public required bool IsNonBillable { get; set; }
     public required int EmployeeNumberAssigned { get; set; }
-    public ICollection<AuditLogTable> AuditLogs { get; set; } = new List<AuditLogTable>();
+    //public ICollection<AuditLogTable> AuditLogs { get; set; } = new List<AuditLogTable>();
 }

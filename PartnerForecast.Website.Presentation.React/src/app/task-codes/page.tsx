@@ -8,7 +8,7 @@ import {
 import TaskCodesHeader from "./taskCodesHeader";
 
 import { Button } from "@headlessui/react";
-import { taskCode } from "@/entities/taskCode";
+import { ITaskCode } from "@/entities/interfaces/ITaskCode";
 import { useEffect, useState } from "react";
 import { flexRender, useReactTable } from "@tanstack/react-table";
 
@@ -20,28 +20,32 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/solid";
-import { taskCodeSearchRequest } from "@/entities/taskCodeSearchRequest";
+import { taskCodeSearchRequest } from "@/app/task-codes/taskCodeSearchRequest";
 import { taskCodeService } from "@/services/taskCodeServices";
 import { UserFilterBar } from "@/components/shared/filterBar";
 import Modal from "@/components/shared/modalPopUp";
 import TaskCodeForm from "./taskCodeForm";
 import toastAlert from "@/components/shared/toastAlert";
 import ConfirmDelete from "@/components/shared/deleteConfirmation";
+import AuditLogForm from "@/components/shared/audit-log/auditLogForm";
+import { LogTypes } from "@/lib/partnerForecastConstants";
 
 export default function TaskCodesPage() {
   const [searchText, setSearchText] = useState("");
-  const [taskCodes, setCodes] = useState<taskCode[]>([]);
+  const [taskCodes, setCodes] = useState<ITaskCode[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [selectedTaskCode, setSelectedTaskCode] = useState<taskCode | null>(
+  const [selectedTaskCode, setSelectedTaskCode] = useState<ITaskCode | null>(
     null,
   );
-  const [showModal, setShowModal] = useState(false);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
   const [filters, setFilters] = useState({
     activeOnly: false,
   });
   const [selectedTaskCodeToDelete, setSelectedTaskCodeToDelete] = useState<
     number | null
   >(null);
+
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false);
   useEffect(() => {
@@ -58,13 +62,19 @@ export default function TaskCodesPage() {
     });
   }
 
-  function handleDelete(id: number): void {
-    console.log(`Delete task code with ID: ${id}`);
-    setSelectedTaskCodeToDelete(id);
+  function handleDelete(code: ITaskCode): void {
+    console.log(`Delete task code with ID: ${code.id}`);
+    setSelectedTaskCodeToDelete(code.id);
     setIsDeleteConfirmationOpen(true);
   }
 
-  async function handleSaveTaskCode(code: taskCode): Promise<void> {
+  function handleViewLog(code: ITaskCode): void {
+    setSelectedTaskCode(code);
+    setShowLogModal(true);
+    // Implement the logic to view the log for the task code with the given ID
+  }
+
+  async function handleSaveTaskCode(code: ITaskCode): Promise<void> {
     try {
       if (selectedTaskCode) {
         await taskCodeService.updateTaskCode(code);
@@ -72,7 +82,7 @@ export default function TaskCodesPage() {
         await taskCodeService.addTaskCode(code);
       }
 
-      setShowModal(false);
+      setShowTaskModal(false);
       setSelectedTaskCode(null);
 
       toastAlert.notifySuccess(
@@ -103,7 +113,8 @@ export default function TaskCodesPage() {
 
   const columns = taskCodeColumns(
     (code) => handleSelectTaskCode(code),
-    (code) => handleDelete(code.id),
+    (code) => handleDelete(code),
+    (code) => handleViewLog(code),
   );
 
   const table = useReactTable({
@@ -135,16 +146,16 @@ export default function TaskCodesPage() {
     setSelectedTaskCodeToDelete(null);
   }
 
-  function handleSelectTaskCode(code: taskCode): void {
+  function handleSelectTaskCode(code: ITaskCode): void {
     console.log("Selected task code:", code);
     setSelectedTaskCode(code);
-    setShowModal(true);
+    setShowTaskModal(true);
   }
 
   function handleAddNewCode(): void {
     console.log("Add new task code:");
     setSelectedTaskCode(null);
-    setShowModal(true);
+    setShowTaskModal(true);
   }
 
   return (
@@ -234,16 +245,29 @@ export default function TaskCodesPage() {
       />
 
       <Modal
-        open={showModal}
+        open={showTaskModal}
         title={selectedTaskCode ? "Edit Task Code" : "Add New Task Code"}
         icon={<ListBulletIcon className="h-6 w-6 text-blue-600" />}
-        onClose={() => setShowModal(false)}
+        onClose={() => setShowTaskModal(false)}
       >
         <TaskCodeForm
           mode={selectedTaskCode ? "edit" : "add"}
           code={selectedTaskCode}
           onSave={handleSaveTaskCode}
-          onCancel={() => setShowModal(false)}
+          onCancel={() => setShowTaskModal(false)}
+        />
+      </Modal>
+
+      <Modal
+        open={showLogModal}
+        title={"Audit log"}
+        icon={<ListBulletIcon className="h-6 w-6 text-blue-600" />}
+        onClose={() => setShowLogModal(false)}
+      >
+        <AuditLogForm
+          id={selectedTaskCode?.id ?? 0}
+          category={LogTypes.TaskCodes}
+          onClose={() => setShowLogModal(false)}
         />
       </Modal>
     </div>

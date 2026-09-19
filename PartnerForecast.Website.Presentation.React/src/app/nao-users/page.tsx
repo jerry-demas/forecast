@@ -11,8 +11,8 @@ import {
 } from "@heroicons/react/24/solid";
 
 import { usersService } from "../../../src/services/userServices";
-import { naoUser } from "@/entities/naoUser";
-import { NaoUserSearchRequest } from "@/entities/naoSearchRequest";
+import { INaoUser } from "@/entities/interfaces/INaoUser";
+import { NaoUserSearchRequest } from "@/app/nao-users/naoSearchRequest";
 
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,9 +31,11 @@ import ConfirmDelete from "@/components/shared/deleteConfirmation";
 import Modal from "@/components/shared/modalPopUp";
 import NaoUserForm from "./naoUserForm";
 import toastAlert from "@/components/shared/toastAlert";
+import AuditLogForm from "@/components/shared/audit-log/auditLogForm";
+import { LogTypes } from "@/lib/partnerForecastConstants";
 
 export default function NAOUsersPage() {
-  const [naoUsers, setUsers] = useState<naoUser[]>([]);
+  const [naoUsers, setUsers] = useState<INaoUser[]>([]);
   const [searchText, setSearchText] = useState("");
 
   const [filters, setFilters] = useState({
@@ -46,8 +48,9 @@ export default function NAOUsersPage() {
     number | null
   >(null);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<naoUser | null>(null);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<INaoUser | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -100,19 +103,25 @@ export default function NAOUsersPage() {
     setSelectedUserIdToDelete(null);
   }
 
-  function handleSelectUser(user: naoUser): void {
+  function handleSelectUser(user: INaoUser): void {
     setSelectedUser(user);
-    setShowModal(true);
+    setShowUserModal(true);
     console.log("Selected user:", user);
   }
 
   function handleAddNewUser(): void {
     setSelectedUser(null);
-    setShowModal(true);
+    setShowUserModal(true);
     console.log("Add new user:");
   }
 
-  async function handleSaveUser(user: naoUser): Promise<void> {
+  function handleViewLog(user: INaoUser): void {
+    setSelectedUser(user);
+    setShowLogModal(true);
+    // Implement the logic to view the log for the selected user
+  }
+
+  async function handleSaveUser(user: INaoUser): Promise<void> {
     try {
       console.log("Saving user:", user);
       if (selectedUser) {
@@ -120,7 +129,7 @@ export default function NAOUsersPage() {
       } else {
         await usersService.addNaoUser(user);
       }
-      setShowModal(false);
+      setShowUserModal(false);
       setSelectedUser(null);
 
       toastAlert.notifySuccess(
@@ -139,6 +148,7 @@ export default function NAOUsersPage() {
   const columns = naoUsersColumns(
     (user) => handleSelectUser(user),
     (user) => handleDelete(user.id),
+    (user) => handleViewLog(user),
   );
 
   const table = useReactTable({
@@ -249,16 +259,29 @@ export default function NAOUsersPage() {
       />
 
       <Modal
-        open={showModal}
+        open={showUserModal}
         title={selectedUser ? "Edit NAO User" : "Add New NAO User"}
         icon={<UsersIcon className="h-6 w-6 text-blue-600" />}
-        onClose={() => setShowModal(false)}
+        onClose={() => setShowUserModal(false)}
       >
         <NaoUserForm
           mode={selectedUser ? "edit" : "add"}
           user={selectedUser}
           onSave={handleSaveUser}
-          onCancel={() => setShowModal(false)}
+          onCancel={() => setShowUserModal(false)}
+        />
+      </Modal>
+
+      <Modal
+        open={showLogModal}
+        title={"Audit log"}
+        icon={<ListBulletIcon className="h-6 w-6 text-blue-600" />}
+        onClose={() => setShowLogModal(false)}
+      >
+        <AuditLogForm
+          id={selectedUser?.id ?? 0}
+          category={LogTypes.EqrUsers}
+          onClose={() => setShowLogModal(false)}
         />
       </Modal>
     </div>

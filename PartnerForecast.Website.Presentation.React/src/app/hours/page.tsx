@@ -1,13 +1,7 @@
-'use client'
+"use client";
 
-import HoursHeader from "./hoursHeader";
+import { HoursPage } from "@/components/shared/hours/hoursPage";
 
-export default function HoursPage() {
-    return (        
-        <div className="space-y-2">
-            <div className="mb-5">
-                <HoursHeader />
-            </div>
-        </div>               
-    );
+export default function Hours() {
+  return <HoursPage isNao={false} headerCaption="Hours" />;
 }

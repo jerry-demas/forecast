@@ -1,5 +1,5 @@
-import { taskCode } from "@/entities/taskCode";
-import { taskCodeSearchRequest } from "@/entities/taskCodeSearchRequest";
+import { ITaskCode } from "@/entities/interfaces/ITaskCode";
+import { taskCodeSearchRequest } from "@/app/task-codes/taskCodeSearchRequest";
 import {
   ADDTASKCODE,
   DELETETASKCODE,
@@ -12,7 +12,7 @@ const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
 class TaskCodeService {
   getTaskCodes = async (
     request?: taskCodeSearchRequest,
-  ): Promise<taskCode[]> => {
+  ): Promise<ITaskCode[]> => {
     const taskCodesUrl = `${apiBaseUrl}${GETTASKCODES}`;
     try {
       const queryParams = new URLSearchParams();
@@ -42,7 +42,7 @@ class TaskCodeService {
         return [];
       }
 
-      const taskCodes: taskCode[] = await response.json();
+      const taskCodes: ITaskCode[] = await response.json();
 
       return taskCodes;
     } catch (error) {
@@ -84,7 +84,7 @@ class TaskCodeService {
     }
   };
 
-  updateTaskCode = async (taskCode: taskCode): Promise<boolean> => {
+  updateTaskCode = async (taskCode: ITaskCode): Promise<boolean> => {
     const taskCodesUrl = `${apiBaseUrl}${UPDATETASKCODE}`;
 
     try {
@@ -118,7 +118,7 @@ class TaskCodeService {
     }
   };
 
-  addTaskCode = async (taskCode: taskCode): Promise<taskCode> => {
+  addTaskCode = async (taskCode: ITaskCode): Promise<ITaskCode> => {
     const taskCodesUrl = `${apiBaseUrl}${ADDTASKCODE}`;
     try {
       const response = await fetch(taskCodesUrl, {

@@ -1,9 +1,9 @@
-﻿using static PartnerForecast.Website.Application.Shared.ForecastConstants;
+﻿
+
+using PartnerForecast.Website.Application.Shared;
 
 namespace PartnerForecast.Website.Application.Features.AuditLogs.Models;
 
 public record GetLogsRequest(
-    bool IsEqr,
-    bool IsNonBillable,
-    AuditLogCategories.Category Category);
-
+    int Id,
+    ForecastConstants.AuditLog.Category Category);

@@ -7,7 +7,7 @@ public record AuditLogRecord(
     int ChangedByEmployeeNumber,
     string ChangeDescription,
     IEnumerable<Change>? Changes,
-    DateTime CreatedDateTime,
+    string CreatedDateTime,
     string ChangedByEmployeeName,
     string ChangedByEmployeeDomain
 );
