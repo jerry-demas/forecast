@@ -2,7 +2,7 @@
 
 import { IClient } from "@/entities/interfaces/IClient";
 import { ThinkingIndicator } from "./spinner";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toastAlert from "./toastAlert";
 import { clientService } from "@/services/clientService";
 
@@ -20,7 +20,6 @@ interface ComponentState {
 }
 
 export function ClientLookup({
-  value,
   onChange,
   onSelect,
   placeholder,
@@ -30,10 +29,14 @@ export function ClientLookup({
     showSpinner: false,
     searchText: "",
   });
-
+  const selectedRef = useRef(false);
   const [clients, setClients] = useState<IClient[]>([]);
 
   useEffect(() => {
+    if (selectedRef.current) {
+      selectedRef.current = false;
+      return;
+    }
     if (state.searchText.length < 3) {
       setClients([]);
       return;
@@ -74,27 +77,32 @@ export function ClientLookup({
           }))
         }
       />
-
       {state.showSpinner && <ThinkingIndicator text="Searching..." />}
-
       {state.showDropdown && clients.length > 0 && (
         <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white shadow">
           {clients.map((client) => (
             <li
-              key={client.clientName}
+              key={client.clientNumber}
               className="cursor-pointer px-3 py-2 hover:bg-gray-100"
               onClick={() => {
+                selectedRef.current = true;
                 setState((prevState) => ({
                   ...prevState,
                   searchText: client.clientName,
                 }));
                 onChange(client);
-                onSelect?.(client);
                 setState((prevState) => ({
                   ...prevState,
                   showDropdown: false,
                 }));
               }}
+              onSelect={() => (
+                setState((prevState) => ({
+                  ...prevState,
+                  showDropdown: false,
+                })),
+                onSelect?.(client)
+              )}
             >
               {client.clientName} ({client.clientNumber})
             </li>

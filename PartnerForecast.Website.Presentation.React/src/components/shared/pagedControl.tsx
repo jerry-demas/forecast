@@ -1,5 +1,6 @@
 "use client";
 
+import { monthsToShow } from "@/lib/partnerForecastConstants";
 import { Button } from "../ui/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 
@@ -22,7 +23,7 @@ export function UserPagedControl({
   onChangePage,
   onChangeRecordsPerPage,
 }: UserPagedControlProps) {
-  const recordsPerPage = ["10", "25", "50", "100"];
+  const recordsPerPage = [monthsToShow.toString(), "25", "50", "100"];
   const minPage = 1;
   const maxPage = Math.max(totalPages, 1);
 

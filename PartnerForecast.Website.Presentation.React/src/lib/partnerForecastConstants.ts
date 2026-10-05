@@ -3,8 +3,13 @@ export const LogTypes = {
   EqrUsers: "EqrUsers",
   TaskCodes: "TaskCodes",
 } as const;
-
 export type LogType = (typeof LogTypes)[keyof typeof LogTypes];
+
+export const modes = {
+  Add: "add",
+  Edit: "edit",
+} as const;
+export type Mode = (typeof modes)[keyof typeof modes];
 
 export const AuditLogChangeTypes = {
   Add: "Added",

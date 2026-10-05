@@ -17,7 +17,8 @@ public static class ServiceCollectionExtensions
         services.AddPartnerForecastService(
             builder.Configuration,
             builder.Configuration.GetConnectionString("PartnerForecastConnection"),
-            builder.Configuration.GetConnectionString("ClientConnection"));
+            builder.Configuration.GetConnectionString("ClientConnection"),
+            builder.Configuration.GetConnectionString("LoggingConnection"));
 
         // Alter NLOG section in "appsettings.config" file in this project to change logging behaviors
         // See https://nlog-project.org/ for more information

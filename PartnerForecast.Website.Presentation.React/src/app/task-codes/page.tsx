@@ -28,7 +28,7 @@ import TaskCodeForm from "./taskCodeForm";
 import toastAlert from "@/components/shared/toastAlert";
 import ConfirmDelete from "@/components/shared/deleteConfirmation";
 import AuditLogForm from "@/components/shared/audit-log/auditLogForm";
-import { LogTypes } from "@/lib/partnerForecastConstants";
+import { LogTypes, modes } from "@/lib/partnerForecastConstants";
 
 export default function TaskCodesPage() {
   const [searchText, setSearchText] = useState("");
@@ -251,7 +251,7 @@ export default function TaskCodesPage() {
         onClose={() => setShowTaskModal(false)}
       >
         <TaskCodeForm
-          mode={selectedTaskCode ? "edit" : "add"}
+          mode={selectedTaskCode ? modes.Edit : modes.Add}
           code={selectedTaskCode}
           onSave={handleSaveTaskCode}
           onCancel={() => setShowTaskModal(false)}

@@ -1,6 +1,7 @@
 "use client";
 
 import { IHour } from "@/entities/interfaces/IHour";
+import { IsHourPast } from "@/lib/functions";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -34,20 +35,35 @@ const actionsColumn = (
 ): ColumnDef<IHour> => ({
   id: "actions",
   header: "Actions",
-  cell: ({ row }) => (
-    <div className="flex gap-2">
-      <button title="Edit Hours" onClick={() => onEdit(row.original)}>
-        <PencilSquareIcon className="h-5 w-5 text-blue-600" />
-      </button>
+  cell: ({ row }) => {
+    const isPast = IsHourPast(row.original);
+    return (
+      <div className="flex gap-2">
+        <button
+          disabled={isPast}
+          title={isPast ? "Past hours cannot be edited" : "Edit Hours"}
+          onClick={() => onEdit(row.original)}
+        >
+          <PencilSquareIcon
+            className={`h-5 w-5 ${isPast ? "text-gray-400" : "text-blue-600"}`}
+          />
+        </button>
 
-      <button title="Delete Hours" onClick={() => onDelete(row.original)}>
-        <TrashIcon className="h-5 w-5 text-red-600" />
-      </button>
-      <button title="View Log" onClick={() => onViewLog(row.original)}>
-        <ListBulletIcon className="h-5 w-5 text-black-600" />
-      </button>
-    </div>
-  ),
+        <button
+          disabled={isPast}
+          title={isPast ? "Past hours cannot be deleted" : "Delete Hours"}
+          onClick={() => onDelete(row.original)}
+        >
+          <TrashIcon
+            className={`h-5 w-5 ${isPast ? "text-gray-400" : "text-red-600"}`}
+          />
+        </button>
+        <button title="View Log" onClick={() => onViewLog(row.original)}>
+          <ListBulletIcon className="h-5 w-5 text-black-600" />
+        </button>
+      </div>
+    );
+  },
 });
 
 export const hoursBillableColumns = (

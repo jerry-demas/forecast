@@ -78,9 +78,9 @@ export function LdapUserLookup({
                 selectedRef.current = true;
                 setSearchText(user.employeeName);
                 onChange(user);
-                onSelect?.(user);
                 setShowDropdown(false);
               }}
+              onSelect={() => (setShowDropdown(false), onSelect?.(user))}
             >
               {user.employeeName} ({user.employeeNumber})
             </li>

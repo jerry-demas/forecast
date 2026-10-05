@@ -28,7 +28,7 @@ public class UsersController(
                     (_, _failures) => NotFound(_failures.Message));
     }
 
-
+    
     [HttpGet("search")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

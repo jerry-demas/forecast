@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentType, SVGProps } from "react";
+import { useUser } from "@/contexts/UserContexts";
 
 type NavigationItem = {
   name: string;
@@ -17,13 +18,20 @@ type NavigationItem = {
   icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
-export const navigation: NavigationItem[] = [
-  { name: "Home", href: "/", icon: HomeIcon },
-  { name: "Hours", href: "/hours", icon: ClockIcon },
-  { name: "NAO Hours", href: "/nao-hours", icon: ClockIcon },
-  { name: "NAO Users", href: "/nao-users", icon: UsersIcon },
-  { name: "Task Codes", href: "/task-codes", icon: ListBulletIcon },
-];
+export const useNavigation = (): NavigationItem[] => {
+  const currentUser = useUser();
+  return [
+    { name: "Home", href: "/", icon: HomeIcon },
+    { name: "Hours", href: "/hours", icon: ClockIcon },
+    { name: "NAO Hours", href: "/nao-hours", icon: ClockIcon },
+    ...(currentUser?.isAdmin
+      ? [
+          { name: "NAO Users", href: "/nao-users", icon: UsersIcon },
+          { name: "Task Codes", href: "/task-codes", icon: ListBulletIcon },
+        ]
+      : []),
+  ];
+};
 
 type MainNavProps = {
   readonly isCollapsed?: boolean;
@@ -36,6 +44,7 @@ export default function MainNav({
   className = "",
   variant = "sidebar",
 }: MainNavProps) {
+  const navigation = useNavigation();
   const pathname = usePathname();
   const isSidebarVariant = variant === "sidebar";
 

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<PropertyGroup>
+		<Title>PartnerForecast.Website.Application</Title>
+		<Description>A Description goes here</Description>
+		<PackageId>PartnerForecast.Website.Application</PackageId>
+	</PropertyGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="Blurbs\**" />
+	  <EmbeddedResource Remove="Blurbs\**" />
+	  <None Remove="Blurbs\**" />
+	</ItemGroup>
+	
+  <ItemGroup>
+	  <PackageReference Include="CBIZ.SharedPackages.Either" />
+	  <PackageReference Include="CBIZ.SharedPackages.Ldap" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" />
+	  <PackageReference Include="Microsoft.Extensions.Options" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Features\Customers\Helpers\" />
+    <Folder Include="Features\TaskCodes\Helpers\" />
+  </ItemGroup>
+
+</Project>

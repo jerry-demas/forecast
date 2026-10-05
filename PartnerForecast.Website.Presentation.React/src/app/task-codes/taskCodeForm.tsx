@@ -1,8 +1,9 @@
 import { ITaskCode } from "@/entities/interfaces/ITaskCode";
 import { useState } from "react";
+import { modes } from "@/lib/partnerForecastConstants";
 
 interface TaskCodeFormProps {
-  mode: "add" | "edit";
+  mode: (typeof modes)[keyof typeof modes];
   code: ITaskCode | null;
   onSave: (code: ITaskCode) => void;
   onCancel: () => void;
@@ -36,8 +37,6 @@ export default function TaskCodeForm({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      {/* Form fields for taskCode properties */}
-
       <div>
         <label className="block mb-1 font-medium">Task Code</label>
         <input
@@ -46,7 +45,7 @@ export default function TaskCodeForm({
           onChange={(e) => handleChange("code", e.target.value)}
           className="w-full border rounded px-2 py-1"
           required
-          disabled={mode === "edit"}
+          disabled={mode === modes.Edit}
         />
       </div>
 
@@ -82,7 +81,6 @@ export default function TaskCodeForm({
           onChange={(e) => handleChange("sort", Number(e.target.value))}
           className="w-full border rounded px-2 py-1"
           required
-          //disabled={mode === "edit"}
         />
       </div>
 

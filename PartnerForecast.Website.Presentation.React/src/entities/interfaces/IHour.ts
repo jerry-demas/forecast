@@ -15,4 +15,5 @@ export interface IHour {
   isEQR: boolean;
   isNonBillable: boolean;
   employeeNumberAssigned: number;
+  isModified?: boolean;
 }

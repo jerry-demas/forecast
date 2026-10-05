@@ -22,7 +22,8 @@ public static class PartnerForecastServiceExtensions
             this IServiceCollection services, 
             IConfiguration configuration, 
             string? partnerExtensionConnectionString,
-            string? clientConnectionString)
+            string? clientConnectionString,
+            string? loggingConnectionString)
         {
             
             
@@ -34,6 +35,10 @@ public static class PartnerForecastServiceExtensions
             if (string.IsNullOrWhiteSpace(clientConnectionString))
             {
                 throw new ArgumentException("Connection string for ClientDataContext must not be null or empty.", nameof(clientConnectionString));
+            }
+            if (string.IsNullOrWhiteSpace(loggingConnectionString))
+            {
+                throw new ArgumentException("Connection string for LoggingDataContext must not be null or empty.", nameof(loggingConnectionString));
             }
             services.AddLdapService();
             services.AddScoped<IPartnerForecastLdapService, PartnerForecastLdapService>();
@@ -53,61 +58,9 @@ public static class PartnerForecastServiceExtensions
 
             services.AddDbContext<ClientDataContext>(options =>
                    options.UseSqlServer(clientConnectionString));
+                
 
-
-        /*
-        services.AddDbContext<ExtensionDbContext>(options =>
-        options.UseSqlServer(appSettingsOptions?.BatchExtensionConnectionString));
-
-        services.AddDbContext<InTappWorkspacesIntegrationDbContext>(options =>
-            options.UseSqlServer(inTappWorkspacesIntegrationConnectionString));
-
-        services.AddScoped<IExtensionRepository, BatchExtensionRepository>();
-
-        services.AddScoped<IBulkExtensionsOneCBizRepository, OneCBizRepository>();
-
-        services.AddScoped<IEngagementWorkspaceConfigRepository, EngagementWorkspaceConfigRepository>();
-
-        services.AddScoped<IAdditiveRepository, AdditiveRepository>();
-
-        var gfrEndPointsSection = configuration.GetRequiredSection("GfrEndPointOptions");
-        services.Configure<GfrEndPointOptions>(gfrEndPointsSection);
-
-        var gfrAccessInfo = configuration.GetRequiredSection("GfrApiOptions");
-        services.Configure<GfrApiOptions>(gfrAccessInfo);
-
-        var gfrProcessInfo = configuration.GetRequiredSection("GfrProcessOptions");
-        services.Configure<GfrProcessOptions>(gfrProcessInfo);
-
-        services.AddScoped<ApiHelper>();
-        services.AddScoped<MailService>();
-        services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IGfrService, GfrService>();
-
-        services.AddHttpClient(appSettingsOptions?.HttpClientName ?? string.Empty,
-            client =>
-            {
-                client.BaseAddress = new Uri(appSettingsOptions?.BatchExtensionBaseUrl ?? string.Empty);
-            })
-            .AddTransientHttpErrorPolicy(policyBuilder =>
-                policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(
-                TimeSpan.FromSeconds(1), 5)));
-
-        services.AddHttpClient(appSettingsOptions?.AdditiveHttpClientName ?? string.Empty,
-            client =>
-            {
-                client.BaseAddress = new Uri(appSettingsOptions?.AdditiveBaseUrl ?? string.Empty);
-            })
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                UseDefaultCredentials = true
-            })
-            .AddTransientHttpErrorPolicy(policyBuilder =>
-                policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(
-                TimeSpan.FromSeconds(1), 5)));
-        */
-
-        return services;
+            return services;
 
         }
 }

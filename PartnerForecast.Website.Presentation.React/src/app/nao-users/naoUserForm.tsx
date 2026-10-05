@@ -1,10 +1,11 @@
 import { LdapUserLookup } from "@/components/shared/ldapUserLookup";
 import { INaoUser } from "@/entities/interfaces/INaoUser";
 import { IUserLookupResult } from "@/entities/interfaces/IldapSearchUsersResult";
+import { modes } from "@/lib/partnerForecastConstants";
 import { FormEvent, useState } from "react";
 
 interface NaoUserFormProps {
-  mode: "add" | "edit";
+  mode: (typeof modes)[keyof typeof modes];
   user: INaoUser | null;
   onSave: (user: INaoUser) => void;
   onCancel: () => void;
@@ -62,7 +63,7 @@ export default function NaoUserForm({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      {mode === "add" && (
+      {mode === modes.Add && (
         <div>
           <label className="block mb-1 font-medium">Search LDAP User</label>
           <LdapUserLookup
@@ -83,7 +84,7 @@ export default function NaoUserForm({
           }
           className="w-full border rounded px-2 py-1"
           required
-          disabled={mode === "edit"}
+          disabled={mode === modes.Edit}
         />
       </div>
 
@@ -95,6 +96,7 @@ export default function NaoUserForm({
           onChange={(e) => handleChange("employeeName", e.target.value)}
           className="w-full border rounded px-2 py-1"
           required
+          disabled={mode === modes.Edit}
         />
       </div>
 
@@ -106,6 +108,7 @@ export default function NaoUserForm({
           onChange={(e) => handleChange("employeeDomain", e.target.value)}
           className="w-full border rounded px-2 py-1"
           required
+          disabled={mode === modes.Edit}
         />
       </div>
 

@@ -32,7 +32,7 @@ import Modal from "@/components/shared/modalPopUp";
 import NaoUserForm from "./naoUserForm";
 import toastAlert from "@/components/shared/toastAlert";
 import AuditLogForm from "@/components/shared/audit-log/auditLogForm";
-import { LogTypes } from "@/lib/partnerForecastConstants";
+import { LogTypes, modes } from "@/lib/partnerForecastConstants";
 
 export default function NAOUsersPage() {
   const [naoUsers, setUsers] = useState<INaoUser[]>([]);
@@ -265,7 +265,7 @@ export default function NAOUsersPage() {
         onClose={() => setShowUserModal(false)}
       >
         <NaoUserForm
-          mode={selectedUser ? "edit" : "add"}
+          mode={selectedUser ? modes.Edit : modes.Add}
           user={selectedUser}
           onSave={handleSaveUser}
           onCancel={() => setShowUserModal(false)}

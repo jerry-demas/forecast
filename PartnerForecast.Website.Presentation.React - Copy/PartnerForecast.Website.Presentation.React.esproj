@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
+  <ItemGroup>
+    <Folder Include="public\" />
+    <Folder Include="src\components\ui\" />
+    <Folder Include="src\lib\" />
+    <Folder Include="src\types\" />
+  </ItemGroup>
+</Project>

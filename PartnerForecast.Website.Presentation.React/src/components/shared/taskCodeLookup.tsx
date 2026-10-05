@@ -15,7 +15,6 @@ interface TaskCodeLookUpProps {
 export function TaskCodeLookup({
   value,
   onChange,
-  onSelect,
   placeholder,
 }: TaskCodeLookUpProps) {
   interface TaskCodeUiState {
@@ -61,10 +60,6 @@ export function TaskCodeLookup({
           `No codes found for the search term ${taskCodeState.searchText}.`,
         );
       }
-      setTaskCodeState((prevState) => ({
-        ...prevState,
-        showDropdown: true,
-      }));
     }, 300);
 
     return () => clearTimeout(timeout);
@@ -82,6 +77,12 @@ export function TaskCodeLookup({
         }
         placeholder={placeholder}
         className="w-full rounded border px-3 py-2"
+        onFocus={() =>
+          setTaskCodeState((prev) => ({
+            ...prev,
+            showDropdown: true,
+          }))
+        }
         onChange={(e) => {
           setTaskCodeState((prevState) => ({
             ...prevState,
@@ -89,12 +90,6 @@ export function TaskCodeLookup({
           }));
           onChange(null);
         }}
-        onFocus={() =>
-          setTaskCodeState((prevState) => ({
-            ...prevState,
-            showDropdown: true,
-          }))
-        }
       />
       {taskCodeState.showSpinner && <ThinkingIndicator text="Searching..." />}
       {taskCodeState.showDropdown && taskCodeState.taskCodes.length > 0 && (
@@ -104,18 +99,23 @@ export function TaskCodeLookup({
               key={taskCode.code}
               className="cursor-pointer px-3 py-2 hover:bg-gray-100"
               onClick={() => {
+                selectedRef.current = true;
                 setTaskCodeState((prevState) => ({
                   ...prevState,
                   searchText: taskCode.code,
                   selectedTaskCode: taskCode,
-                }));
-                onChange(taskCode);
-                onSelect?.(taskCode);
-                setTaskCodeState((prevState) => ({
-                  ...prevState,
                   showDropdown: false,
                 }));
+                onChange(taskCode);
               }}
+              onSelect={() =>
+                setTaskCodeState((prevState) => ({
+                  ...prevState,
+                  searchText: taskCode.code,
+                  selectedTaskCode: taskCode,
+                  showDropdown: false,
+                }))
+              }
             >
               {taskCode.code} ({taskCode.codeDescription})
             </li>

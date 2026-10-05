@@ -8,21 +8,26 @@ import { ClientLookup } from "../clientLookup";
 import { IClient } from "@/entities/interfaces/IClient";
 import { HoursSearchRequest } from "./hoursSearchRequest";
 import { TaskCodeLookup } from "../taskCodeLookup";
-import { ITaskCode } from "@/entities/interfaces/ITaskCode";
 import { HoursInput } from "./hourInput";
+import { useUser } from "@/contexts/UserContexts";
+import { monthsToShow, modes } from "@/lib/partnerForecastConstants";
+import { toast } from "sonner";
 
 interface HoursFormProps {
-  mode: "add" | "edit";
+  mode: (typeof modes)[keyof typeof modes];
   isNonBillable: boolean;
   isNao: boolean;
   hour: IHour | null;
-  existingHours: IHour[] | null;
+  addhours: IHour[] | null;
   showUnsavedHoursIndicator: boolean;
-  onSave: (hour: IHour) => void;
+  onSave: (hour: IHour | IHour[]) => void;
   onCancel: () => void;
-  //onMonthChange: (month: number) => void;
-  //onYearChange: (year: number) => void;
-  onRequestHours: (request: HoursSearchRequest) => void; // NEW
+
+  onRequestHours: (
+    request: HoursSearchRequest,
+    selectedClient: IClient | null,
+    selectedLdapUser: IUserLookupResult | null,
+  ) => void; // NEW
 }
 
 export default function HoursForm({
@@ -30,14 +35,14 @@ export default function HoursForm({
   isNonBillable,
   isNao,
   hour,
-  existingHours,
+  addhours,
   showUnsavedHoursIndicator,
   onSave,
   onCancel,
-  //onMonthChange,
-  //onYearChange,
   onRequestHours,
 }: HoursFormProps) {
+  const currentUser = useUser();
+
   const [formData, setFormData] = useState<IHour>({
     id: hour?.id || 0,
     employeeNumber: hour?.employeeNumber || 0,
@@ -58,12 +63,32 @@ export default function HoursForm({
   });
 
   useEffect(() => {
-    setHoursToAddUpdate(existingHours ?? []);
-  }, [existingHours]);
+    if (mode === modes.Add && addhours && addhours.length > 0) {
+      setHoursToAddUpdate(addhours);
+    } else {
+      setHoursToAddUpdate([]);
+    }
+  }, [addhours, mode]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSave(formData);
+    console.log("Submitting hours data:", addhours);
+    if (noUpdatesMade()) {
+      toast.message("No updates made. Please modify the hours before saving.");
+      return;
+    }
+    onSave(mode === modes.Add ? addhours! : formData);
+  };
+
+  const noUpdatesMade = () => {
+    if (mode === modes.Add) {
+      return (
+        !addhours ||
+        addhours.length === 0 ||
+        !addhours.some((hour) => hour.isModified)
+      );
+    }
+    return !formData.isModified;
   };
 
   const handleChange = (
@@ -75,31 +100,16 @@ export default function HoursForm({
 
   const handleHourChange = (index: number, updatedHour: IHour | null) => {
     if (!updatedHour) return;
-    setHoursToAddUpdate((prev) => {
-      const newHours = [...prev];
-      console.log(
-        "OriginalHours",
-        newHours.forEach((h) => console.log(h)),
-      );
-      newHours[index] = updatedHour;
-      setHoursToAddUpdate(newHours);
-      console.log(
-        "Updated",
-        newHours.forEach((h) => console.log(h)),
-      );
-      return newHours;
-    });
+    addhours![index] = updatedHour;
+    addhours![index].isModified = true;
+    setHoursToAddUpdate([...addhours!]);
   };
 
   const [selectedLdapUser, setSelectedLdapUser] =
     useState<IUserLookupResult | null>(null);
 
   const [selectedClient, setSelectedClient] = useState<IClient | null>(null);
-  const [selectedTaskCode, setSelectedTaskCode] = useState<ITaskCode | null>(
-    null,
-  );
   const [hoursToAddUpdate, setHoursToAddUpdate] = useState<IHour[]>([]);
-
   const handleLdapUserSelect = (ldapUser: IUserLookupResult | null) => {
     setSelectedLdapUser(ldapUser);
 
@@ -112,27 +122,29 @@ export default function HoursForm({
       }));
     }
 
-    if (mode === "add") {
+    if (mode === modes.Add) {
       loadExistingHours(ldapUser, selectedClient, formData.taskCode);
-      //buildHoursToAddUpdate();
     }
   };
 
   const handleClientSelect = (client: IClient | null) => {
     setSelectedClient(client);
 
-    if (mode === "add") {
+    if (mode === modes.Add) {
       loadExistingHours(selectedLdapUser, client, formData.taskCode);
-      //buildHoursToAddUpdate();
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        customerName: client?.clientName ?? "",
+        customerNumber: client?.clientNumber ?? "",
+      }));
     }
   };
 
   const handleCodeSelect = (code: string) => {
     setFormData((prev) => ({ ...prev, taskCode: code }));
-
-    if (mode === "add") {
+    if (mode === modes.Add) {
       loadExistingHours(selectedLdapUser, selectedClient, code);
-      //buildHoursToAddUpdate();
     }
   };
 
@@ -141,36 +153,43 @@ export default function HoursForm({
     client: IClient | null,
     taskCode: string,
   ) {
-    if (!ldapUser) return;
+    if (currentUser?.isAdmin && !ldapUser) return;
 
     if (!isNonBillable && !client) return;
 
     const request: HoursSearchRequest = {
-      pagedParameters: { pageNumber: 1, pageSize: 10 },
+      pagedParameters: {
+        pageNumber: 1,
+        pageSize: monthsToShow,
+      },
       isNao,
       isNonBillable,
       year: 0,
       month: 0,
       forNewHours: true,
       clientNumber: client?.clientNumber ?? "",
-      employeeNumber: ldapUser?.employeeNumber ?? 0,
+      employeeNumber: currentUser?.isAdmin
+        ? ldapUser?.employeeNumber
+        : (currentUser?.employeeNumber ?? 0),
       taskCode: isNonBillable ? taskCode : undefined,
     };
 
-    await onRequestHours(request);
+    await onRequestHours(request, client, ldapUser);
   }
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      {mode === "edit" && (
+      {mode === modes.Edit && (
         <div>
           <div>
+            <label className="block mb-1 font-medium">Month</label>
             <MonthSelect
               onChange={(month) => handleChange("month", month)}
               value={formData.month}
             />
           </div>
           <div>
+            <label className="block mb-1 font-medium">Year</label>
             <YearSelect
               onChange={(year) => handleChange("year", year)}
               value={formData.year}
@@ -209,20 +228,22 @@ export default function HoursForm({
         />
       )}
       <div>
-        <LdapUserLookup
-          placeholder={
-            formData.employeeNameAssigned || "Search user by name..."
-          }
-          value={selectedLdapUser}
-          onChange={(e) => {
-            handleLdapUserSelect(e);
-          }}
-          onSelect={(e) => {
-            handleLdapUserSelect(e);
-          }}
-        ></LdapUserLookup>
+        {currentUser?.isAdmin && (
+          <LdapUserLookup
+            placeholder={
+              formData.employeeNameAssigned || "Search user by name..."
+            }
+            value={selectedLdapUser}
+            onChange={(e) => {
+              handleLdapUserSelect(e);
+            }}
+            onSelect={(e) => {
+              handleLdapUserSelect(e);
+            }}
+          ></LdapUserLookup>
+        )}
       </div>
-      {mode === "edit" && (
+      {mode === modes.Edit && (
         <div>
           <label className="block mb-1 font-medium">Hours</label>
           <input
@@ -235,17 +256,19 @@ export default function HoursForm({
         </div>
       )}
 
-      {mode === "add" && existingHours && existingHours.length > 0 && (
-        <div className="grid grid-cols-13 gap-1">
-          {existingHours.map((hour, index) => (
-            <HoursInput
-              key={index}
-              value={hour}
-              onChange={(updatedHour) => handleHourChange(index, updatedHour)}
-            />
-          ))}
-        </div>
-      )}
+      {mode === modes.Add &&
+        hoursToAddUpdate &&
+        hoursToAddUpdate.length > 0 && (
+          <div className="grid grid-cols-13 gap-1">
+            {hoursToAddUpdate.map((hour, index) => (
+              <HoursInput
+                key={index}
+                value={hour}
+                onChange={(updatedHour) => handleHourChange(index, updatedHour)}
+              />
+            ))}
+          </div>
+        )}
       {showUnsavedHoursIndicator && (
         <div className="font-semibold text-red-500">
           * Red hours indicate unsaved hours
